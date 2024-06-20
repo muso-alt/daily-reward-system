@@ -1,6 +1,9 @@
-﻿using Muso.DailyReward;
+﻿using Cysharp.Threading.Tasks;
+using Muso.DailyReward;
 using Muso.DailyReward.Factories;
 using Muso.DailyReward.Interfaces;
+using Muso.DailyReward.Observers;
+using Muso.DailyReward.Strategies;
 
 namespace Runtime.DailyReward
 {
@@ -8,56 +11,41 @@ namespace Runtime.DailyReward
     {
         private readonly RewardConfig _rewardConfig;
         private readonly IRewardStrategy _dailyRewardStrategy;
-        private readonly IRewardStrategy _byTimeRewardStrategy;
+        private readonly RewardObserver _rewardObserver;
 
         public RewardService(RewardConfig rewardConfig)
         {
             _rewardConfig = rewardConfig;
+            _rewardObserver = new RewardObserver();
             
-            _dailyRewardStrategy = new DailyRewardFactory(rewardConfig).CreateRewardStrategy();
-            _byTimeRewardStrategy = new RewardByTimeFactory(rewardConfig).CreateRewardStrategy();
+            _dailyRewardStrategy = new DailyRewardFactory(rewardConfig, _rewardObserver).CreateRewardStrategy();
         }
 
-        public Reward[] GetDailyRewardsList()
+        public RewardState GetStateOfIndex(int index)
         {
-            return _rewardConfig.DailyRewards;
+            var rewards = _rewardObserver.GetRewardsByState();
+
+            return rewards[index];
         }
 
-        public TimeBasedReward[] GetRewardsByTimeList()
+        public AsyncReactiveProperty<string> GetRemainTimeToNextReward()
         {
-            return _rewardConfig.RewardsByTime;
+            return _dailyRewardStrategy.RemainTime;
         }
 
-        public Reward GetDailyReward()
+        public Reward GetActiveReward()
         {
             return _dailyRewardStrategy.GetActiveReward();
         }
 
-        public bool ClaimDailyReward()
+        public void ClaimReward()
         {
-            if (_dailyRewardStrategy.CanGetReward())
-            {
-                _dailyRewardStrategy.ClaimReward();
-                return true;
-            }
-
-            return false;
+            _dailyRewardStrategy.ClaimReward();
         }
 
-        public Reward GetRewardByTime()
+        public bool CanClaimReward()
         {
-            return _byTimeRewardStrategy.GetActiveReward();
-        }
-
-        public bool ClaimRewardByTime()
-        {
-            if (_byTimeRewardStrategy.CanGetReward())
-            {
-                _byTimeRewardStrategy.ClaimReward();
-                return true;
-            }
-
-            return false;
+            return _dailyRewardStrategy.CanGetReward();
         }
     }
 }

@@ -1,10 +1,8 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace Muso.DailyReward.Interfaces
+namespace Muso.DailyReward
 {
-    [Serializable]
-    public class Reward
+    public class Reward : MonoBehaviour
     {
         [SerializeField] private string _name;
 
