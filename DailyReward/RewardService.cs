@@ -9,21 +9,21 @@ namespace Runtime.DailyReward
 {
     public class RewardService
     {
-        private readonly RewardConfig _rewardConfig;
         private readonly IRewardStrategy _dailyRewardStrategy;
-        private readonly RewardObserver _rewardObserver;
+        private readonly IRewardStrategy _rewardByTimeStrategy;
+        private readonly RewardsModel _rewardsModel;
 
         public RewardService(RewardConfig rewardConfig)
         {
-            _rewardConfig = rewardConfig;
-            _rewardObserver = new RewardObserver();
+            _rewardsModel = new RewardsModel();
             
-            _dailyRewardStrategy = new DailyRewardFactory(rewardConfig, _rewardObserver).CreateRewardStrategy();
+            _dailyRewardStrategy = new DailyRewardFactory(rewardConfig, _rewardsModel).CreateRewardStrategy();
+            _rewardByTimeStrategy = new RewardByTimeFactory(rewardConfig, _rewardsModel).CreateRewardStrategy();
         }
 
         public RewardState GetStateOfIndex(int index)
         {
-            var rewards = _rewardObserver.GetRewardsByState();
+            var rewards = _rewardsModel.RewardsByState;
 
             return rewards[index];
         }
@@ -31,6 +31,16 @@ namespace Runtime.DailyReward
         public AsyncReactiveProperty<string> GetRemainTimeToNextReward()
         {
             return _dailyRewardStrategy.RemainTime;
+        }
+        
+        public AsyncReactiveProperty<string> GetRemainTimeToSessionReward()
+        {
+            return _rewardByTimeStrategy.RemainTime;
+        }
+
+        public Reward GetTimeBaseReward()
+        {
+            return _rewardByTimeStrategy.GetActiveReward();
         }
 
         public Reward GetActiveReward()
@@ -46,6 +56,16 @@ namespace Runtime.DailyReward
         public bool CanClaimReward()
         {
             return _dailyRewardStrategy.CanGetReward();
+        }
+
+        public bool CanClaimTimeBasedReward()
+        {
+            return _rewardByTimeStrategy.CanGetReward();
+        }
+
+        public void ClaimByTimeReward()
+        {
+            _rewardByTimeStrategy.ClaimReward();
         }
     }
 }

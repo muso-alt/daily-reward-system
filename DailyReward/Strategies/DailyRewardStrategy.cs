@@ -11,18 +11,18 @@ namespace Muso.DailyReward.Strategies
         public AsyncReactiveProperty<string> RemainTime { get; } = new(default);
         
         private readonly RewardConfig _rewardConfig;
-        private readonly RewardObserver _rewardObserver;
+        private readonly RewardsModel _rewardsModel;
         private readonly RewardStateSaver _rewardStateSaver;
         private readonly CancellationTokenSource _tokenSource;
         private readonly TimeSpan _rewardInterval = TimeSpan.FromDays(1);
-
+ 
         private const float TestIncreaseDay = 0f;
         private int _daysFromReward;
         
-        public DailyRewardStrategy(RewardConfig rewardConfig, RewardObserver rewardObserver)
+        public DailyRewardStrategy(RewardConfig rewardConfig, RewardsModel rewardsModel)
         {
             _rewardConfig = rewardConfig;
-            _rewardObserver = rewardObserver;
+            _rewardsModel = rewardsModel;
             
             _rewardStateSaver = new RewardStateSaver();
             _tokenSource = new CancellationTokenSource();
@@ -61,7 +61,12 @@ namespace Muso.DailyReward.Strategies
 
         public Reward GetActiveReward()
         {
-            var rewards = _rewardObserver.GetRewardsByState();
+            if (!CanGetReward())
+            {
+                return null;
+            }
+            
+            var rewards = _rewardsModel.RewardsByState;
             
             foreach (var reward in rewards)
             {
@@ -76,7 +81,7 @@ namespace Muso.DailyReward.Strategies
 
         private void UpdateRewardsState()
         {
-            var rewards = _rewardObserver.GetRewardsByState();
+            var rewards = _rewardsModel.RewardsByState;
             var count = _rewardConfig.DailyRewards.Length;
             
             for (var i = 0; i < count; i++)
