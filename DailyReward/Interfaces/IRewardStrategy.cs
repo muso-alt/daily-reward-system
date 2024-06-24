@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
-using Muso.DailyReward.Strategies;
+﻿using Cysharp.Threading.Tasks;
 
 namespace Muso.DailyReward.Interfaces
 {
@@ -10,5 +8,6 @@ namespace Muso.DailyReward.Interfaces
         public Reward GetActiveReward();
         public bool CanGetReward();
         public void ClaimReward();
+        Reward GetRewardByIndex(int index);
     }
 }

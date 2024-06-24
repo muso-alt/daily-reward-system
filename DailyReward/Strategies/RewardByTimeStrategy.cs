@@ -1,7 +1,7 @@
 ﻿using System;
 using Cysharp.Threading.Tasks;
 using Muso.DailyReward.Interfaces;
-using Muso.DailyReward.Observers;
+using Muso.DailyReward.Data;
 using UnityEngine;
 
 namespace Muso.DailyReward.Strategies
@@ -54,7 +54,12 @@ namespace Muso.DailyReward.Strategies
             
             SaveLastGiftTime();
         }
-        
+
+        public Reward GetRewardByIndex(int index)
+        {
+            return _rewardConfig.RewardsByTime[index].RewardByTime;
+        }
+
         private void LoadLastGiftTime()
         {
             if (PlayerPrefs.HasKey(LastRewardTimeKey))
@@ -74,7 +79,6 @@ namespace Muso.DailyReward.Strategies
         {
             if ((DateTime.Today - _lastGiftTime).Days > 0)
             {
-                Debug.Log("I skipped");
                 return;
             }
             

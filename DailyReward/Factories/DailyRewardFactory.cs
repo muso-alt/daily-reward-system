@@ -1,5 +1,5 @@
-﻿using Muso.DailyReward.Interfaces;
-using Muso.DailyReward.Observers;
+﻿using Muso.DailyReward.Data;
+using Muso.DailyReward.Interfaces;
 using Muso.DailyReward.Strategies;
 
 namespace Muso.DailyReward.Factories

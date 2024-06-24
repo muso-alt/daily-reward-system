@@ -1,8 +1,8 @@
 ﻿using Cysharp.Threading.Tasks;
 using Muso.DailyReward;
+using Muso.DailyReward.Data;
 using Muso.DailyReward.Factories;
 using Muso.DailyReward.Interfaces;
-using Muso.DailyReward.Observers;
 using Muso.DailyReward.Strategies;
 
 namespace Runtime.DailyReward
@@ -46,6 +46,11 @@ namespace Runtime.DailyReward
         public Reward GetActiveReward()
         {
             return _dailyRewardStrategy.GetActiveReward();
+        }
+
+        public Reward GetRewardByIndex(int index)
+        {
+            return _dailyRewardStrategy.GetRewardByIndex(index);
         }
 
         public void ClaimReward()

@@ -2,7 +2,7 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using Muso.DailyReward.Interfaces;
-using Muso.DailyReward.Observers;
+using Muso.DailyReward.Data;
 
 namespace Muso.DailyReward.Strategies
 {
@@ -51,6 +51,11 @@ namespace Muso.DailyReward.Strategies
             
             _rewardStateSaver.Save();
             UpdateRewardsState();
+        }
+
+        public Reward GetRewardByIndex(int index)
+        {
+            return _rewardConfig.DailyRewards[index];
         }
 
         public bool CanGetReward()
@@ -135,7 +140,7 @@ namespace Muso.DailyReward.Strategies
             {
                 var tomorrowTime = _rewardStateSaver.LastRewardTime + _rewardInterval;
                 var remainingTime = tomorrowTime - (DateTime.Now + TimeSpan.FromDays(TestIncreaseDay));
-                RemainTime.Value = $@"{remainingTime:d\:hh\:mm\:ss}";
+                RemainTime.Value = $@"{remainingTime:hh\:mm\:ss}";
                 await UniTask.Delay(500, cancellationToken: _tokenSource.Token);
             }
         }
